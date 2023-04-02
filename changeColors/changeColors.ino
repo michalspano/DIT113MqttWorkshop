@@ -89,9 +89,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 void setColorAndPrintMessage(String message) {
-  tft.println("OK");
-  int bgColor;                    // declare a backgroundColor
-
+  int bgColor;                      // declare a backgroundColor
+  int textColor = TFT_WHITE;        // initialize the text color to white
   String displayText = "Received message:";
 
   // Set background color based on input string
@@ -100,7 +99,27 @@ void setColorAndPrintMessage(String message) {
      Use: https://wiki.seeedstudio.com/Wio-Terminal-LCD-Basic
   */
 
-  Serial.println(message);
+  Serial.println(message); // serial log of the message received
+
+  // map the message to a TFT_eSPI color
+  switch (message.toInt()) {
+    case 0:
+      bgColor = TFT_BLUE;
+      break;
+    case 1:
+      bgColor = TFT_RED;
+      break;
+    case 2:
+      bgColor = TFT_GREEN;
+      break;
+    case 3:
+      bgColor = TFT_YELLOW;
+      break;
+    // TODO: add the remaining colors
+    default:
+      bgColor = TFT_BLACK;
+      break;
+  }
   
   // Update TFT display and print input message
   tft.fillScreen(bgColor);                                      // Fill the screen with the background color
