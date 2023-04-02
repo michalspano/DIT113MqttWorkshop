@@ -23,12 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private BrokerConnection brokerConnection;  // Declare the brokerConnection
     int QOS = 0;
 
-    /* TODO
-        define a topic to publish the color
-     */
-    public static final String PUB_TOPIC = "";
-
-
+    public static final String PUB_TOPIC = "SpeechApp";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +66,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK && data != null){
-            // extract all the results in an string array from the intent
+            // extract all the results in a string array from the intent
             ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             // display the first index of the array, which will contain our value
             textDisplay.setText(text.get(0));
             // find if a color is given and publish it to the broker
+            System.out.println(text.get(0));
             publishColor(text.get(0));
         }
     }
@@ -86,17 +82,13 @@ public class MainActivity extends AppCompatActivity {
      * @param message - String obtained from the microphone
      */
     public void publishColor(String message){
-        String output = "";
-        /* TODO
-            1. Use the helper function findColor and publish the color.
-            2. When the basic connection is working, add the code to handle the new color (must have it's own topic)
-         */
-
-        Log.i("Publishing Color:", output);     //Prints in the android console
+        String output = findColor(message);
+        Log.i("Publishing Color:", output); // log the color to the console
+        brokerConnection.getMqttClient().publish(PUB_TOPIC, output, QOS, null);
     }
 
     /**
-     * Helper function to find the colors in the string
+     * Helper function to find the color as the string from the Enum Colors
      * @param message
      * @return
      */

@@ -5,14 +5,14 @@
 *****************************************************************************/
 
 #include <rpcWiFi.h>
-#include"TFT_eSPI.h"
+#include "TFT_eSPI.h"
 #include <PubSubClient.h>
 
+#include "credentials.h"
 
 // Update these with values suitable for your network.
-const char* ssid = SSID; // WiFi Name
-const char* password = PASSWORD;  // WiFi Password
-
+const char* ssid      = SSID;                 // WiFi Names
+const char* password  = PASSWORD;             // WiFi Password
 
 /**********  HOW TO FIND YOUR MOSQUITTO BROKER ADDRESS*******************
   In Windows command prompt, use the command:   ipconfig
@@ -22,12 +22,11 @@ const char* password = PASSWORD;  // WiFi Password
 
 const char* server = my_IPv4;  // MQTT Broker URL
 
-/* TODO
-    add the corresponding topics
-*/ 
-const char* TOPIC_sub = "";
-const char* TOPIC_pub_connection = "";
+// topic for receiving the color
+const char* TOPIC_sub = "SpeechApp";
 
+// topic for sending the connection information
+const char* TOPIC_pub_connection = "SpeechApp/Connection";
 
 TFT_eSPI tft;
 
@@ -36,7 +35,6 @@ PubSubClient client(wioClient);
 long lastMsg = 0;
 char msg[50];
 int value = 0;
-
 
 void setup_wifi() {
 
@@ -67,16 +65,15 @@ void setup_wifi() {
   Serial.println(WiFi.localIP()); // Display Local IP Address
 }
 
-String getPayload(){
-
-}
+String getPayload() { }
 
 void callback(char* topic, byte* payload, unsigned int length) {
   tft.fillScreen(TFT_BLACK);
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
-// process payload and convert it to a string
+
+  // process payload and convert it to a string
   char buff_p[length];
   for (int i = 0; i < length; i++) {
     Serial.print((char)payload[i]);
@@ -85,15 +82,16 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
   buff_p[length] = '\0';
   String message = String(buff_p);
-// end of conversion
+
+  // end of conversion
   /***************  Action with topic and messages ***********/
   setColorAndPrintMessage(message);
-
 }
 
 void setColorAndPrintMessage(String message) {
-  int bgColor;    // declare a backgroundColor
-  int textColor = TFT_WHITE;    // initializee the text color to white
+  tft.println("OK");
+  int bgColor;                    // declare a backgroundColor
+
   String displayText = "Received message:";
 
   // Set background color based on input string
@@ -101,16 +99,17 @@ void setColorAndPrintMessage(String message) {
      implement the color changes of the display depending on the command received
      Use: https://wiki.seeedstudio.com/Wio-Terminal-LCD-Basic
   */
+
+  Serial.println(message);
   
   // Update TFT display and print input message
-  tft.fillScreen(bgColor);    // Fill the screen with the background color
-   tft.setTextColor(textColor, bgColor);    // set the text and background color                   
-  tft.setTextSize(2);                       // set the size of the text
+  tft.fillScreen(bgColor);                                      // Fill the screen with the background color
+  tft.setTextColor(textColor, bgColor);                         // set the text and background color                   
+  tft.setTextSize(2);                                           // set the size of the text
   tft.setCursor((320 - tft.textWidth(displayText)) / 2, 90);    // Make sure to align the text to the center of the screen
-  tft.println(displayText);     // print the text
+  tft.println(displayText);                                     // print the text
   tft.setCursor((320 - tft.textWidth(message)) / 2, 120);         
   tft.println(message);
-
 }
 
 void reconnect() {
@@ -140,11 +139,9 @@ void reconnect() {
 }
 
 void setup() {
-
   tft.begin();
   tft.fillScreen(TFT_BLACK);
   tft.setRotation(3);
-
 
   Serial.println();
   Serial.begin(115200);
@@ -154,8 +151,6 @@ void setup() {
 }
 
 void loop() {
-
-
   if (!client.connected()) {
     reconnect();
   }
