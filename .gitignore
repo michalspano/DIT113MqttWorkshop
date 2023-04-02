@@ -3,4 +3,8 @@
 .idea/
 .gradle/
 
+*.project
+*.settings
+*.classpath
+
 changeColors/credentials.h
