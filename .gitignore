@@ -1,0 +1,11 @@
+*.DS_Store
+
+.idea/
+.gradle/
+
+*.project
+*.settings
+*.classpath
+
+changeColors/credentials.h
+
